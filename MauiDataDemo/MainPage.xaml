@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="MauiDataDemo.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:MauiDataDemo"
+    x:DataType="local:MainViewModel">
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsEnabled="False" IsVisible="False" />
+    </Shell.BackButtonBehavior>
+
+    <Grid RowDefinitions="*,Auto">
+        <Grid IsClippedToBounds="True">
+            <CollectionView ItemsSource="{Binding Cities}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="local:CityInfo">
+                        <Grid Padding="10,5,10,5" ColumnDefinitions="80,*">
+                            <Label Text="{Binding Id}" />
+                            <Label Grid.Column="1" Text="{Binding City}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+        <Grid Grid.Row="1" Padding="10">
+            <FlexLayout Wrap="Wrap">
+                <FlexLayout.Resources>
+                    <ResourceDictionary>
+                        <Style BasedOn="{StaticResource DefaultButtonStyle}" TargetType="Button">
+                            <Setter Property="Margin" Value="5" />
+                        </Style>
+                    </ResourceDictionary>
+                </FlexLayout.Resources>
+                <Button Command="{Binding PopulateSQLite1Command}" Text="Populate SQL #1" />
+                <Button Command="{Binding PopulateSQLite2Command}" Text="Populate SQL #2 (Unsafe)" />
+                <Button Command="{Binding PopulateDataTable1Command}" Text="Populate DataTable #1" />
+                <Button Command="{Binding PopulateDataTable2Command}" Text="Populate DataTable #2 (Unsafe)" />
+                <Button Command="{Binding PopulateDataTable3Command}" Text="Populate DataTable #3 (Safe)" />
+            </FlexLayout>
+        </Grid>
+    </Grid>
+    <!--<ScrollView>
+        <VerticalStackLayout Padding="30,0" Spacing="25">
+
+            <Entry x:Name="entryQuery" Text="Mel%" />
+
+    -->
+    <!--<local:DBQuery
+                x:Name="dbQuery"
+                x:TypeArguments="local:CityInfo"
+                Db="{Binding Db}"
+                Query="SELECT * FROM Cities WHERE city Like ? LIMIT 10"
+                X0="{Binding Text, x:DataType='Entry', Source={Reference entryQuery}}" />
+
+            <CollectionView HeightRequest="400" ItemsSource="{Binding Results, x:DataType='local:DBQuery(local:CityInfo)', Source={Reference dbQuery}}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="local:CityInfo">
+                        <Label Text="{Binding City}" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>-->
+    <!--
+
+        </VerticalStackLayout>
+    </ScrollView>-->
+
+</ContentPage>
