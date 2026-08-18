@@ -11,7 +11,7 @@
     </Shell.BackButtonBehavior>
 
     <Grid RowDefinitions="Auto,*">
-        <Grid Grid.Row="0" Padding="10">
+        <VerticalStackLayout Padding="10">
             <FlexLayout Wrap="Wrap">
                 <FlexLayout.Resources>
                     <ResourceDictionary>
@@ -26,7 +26,8 @@
                 <Button Command="{Binding PopulateDataTable2Command}" Text="Populate DataTable #2 (Unsafe)" />
                 <Button Command="{Binding PopulateDataTable3Command}" Text="Populate DataTable #3 (Safe)" />
             </FlexLayout>
-        </Grid>
+            <Entry Text="{Binding SearchFilter, Mode=TwoWay}" />
+        </VerticalStackLayout>
         <Grid Grid.Row="1">
             <CollectionView ItemsSource="{Binding Cities}">
                 <CollectionView.ItemTemplate>

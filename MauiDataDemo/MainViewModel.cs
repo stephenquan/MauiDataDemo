@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using SQLite;
+using SQLitePCL;
 
 namespace MauiDataDemo;
 
@@ -17,12 +18,45 @@ public partial class MainViewModel : ObservableObject
 	public DataTable MyDataTable { get; internal set; } = new();
 
 	[ObservableProperty]
+	public partial string SearchFilter { get; set; } = string.Empty;
+
+	partial void OnSearchFilterChanged(string value)
+	{
+		RefreshCities();
+	}
+
+	[ObservableProperty]
 	public partial List<CityInfo> Cities { get; internal set; } = new();
 
 	public MainViewModel()
 	{
 		MyDatabase = new(":memory:");
-		MyDatabase.CreateTable<CityInfo>();
+
+		SQLitePCL.raw.sqlite3_create_function(
+			MyDatabase.Handle,
+			"GetNWord",
+			2,
+			SQLitePCL.raw.SQLITE_DETERMINISTIC,
+			null,
+			GetNWord);
+
+		//MyDatabase.CreateTable<CityInfo>();
+
+		MyDatabase.RunInTransaction(() =>
+		{
+			MyDatabase.Execute(
+				"""
+				CREATE TABLE Cities
+				(
+					Id INTEGER UNIQUE,
+					City TEXT
+				)
+				""");
+			MyDatabase.Execute("CREATE INDEX IX_Cities_001 ON Cities (Id)");
+			MyDatabase.Execute("CREATE INDEX IX_Cities_002 ON Cities (GetNWord(City, 0))");
+			MyDatabase.Execute("CREATE INDEX IX_Cities_003 ON Cities (GetNWord(City, 1))");
+			MyDatabase.Execute("CREATE INDEX IX_Cities_004 ON Cities (GetNWord(City, 0), GetNWord(City, 1))");
+		});
 	}
 
 	static string[] cityPrefixes = { "New", "Old", "North", "South", "East", "West" };
@@ -103,7 +137,84 @@ public partial class MainViewModel : ObservableObject
 
 	public void RefreshCities()
 	{
+		if (!string.IsNullOrEmpty(SearchFilter)
+			&& SearchFilter.Split() is var words
+			&& words is not null
+			&& words.Length > 0)
+		{
+			if (words.Length == 1)
+			{
+				Cities = MyDatabase.Query<CityInfo>(
+					$$"""
+					SELECT *
+					FROM	Cities c
+					WHERE	EXISTS (
+							SELECT 1
+							FROM Cities c1
+							WHERE GetNWord(c1.City, 0) LIKE ?
+							AND c1.Id = c.Id)
+					OR		EXISTS (
+							SELECT 1
+							FROM Cities c2
+							WHERE GetNWord(c2.City, 1) LIKE ?
+							AND c2.Id = c.Id)
+					""",
+					words[0] + "%",
+					words[0] + "%");
+				return;
+			}
+
+			Cities = MyDatabase.Query<CityInfo>(
+				$$"""
+				SELECT *
+				FROM	Cities c
+				WHERE	EXISTS (
+						SELECT 1
+						FROM Cities c1
+						WHERE GetNWord(c1.City, 0) LIKE ?
+						AND c1.Id = c.Id)
+				AND		EXISTS (
+						SELECT 1
+						FROM Cities c2
+						WHERE GetNWord(c2.City, 1) LIKE ?
+						AND c2.Id = c.Id)
+				""",
+				words[0] + "%",
+				words[1] + "%");
+			return;
+		}
+
 		Cities = MyDatabase.Table<CityInfo>().ToList();
+	}
+
+	/// <summary>
+	/// Implements GetNWord(text, wordIndex) for SQLite
+	/// </summary>
+	/// <param name="ctx">The SQLite context.</param>
+	/// <param name="userData">User data passed to the function.</param>
+	/// <param name="args">The arguments passed to the function.</param>
+	public static void GetNWord(sqlite3_context ctx, object userData, sqlite3_value[] args)
+	{
+		if (args.Length < 2)
+		{
+			raw.sqlite3_result_error_code(ctx, (int)SQLite3.Result.Misuse);
+			return;
+		}
+
+		string text = SQLitePCL.raw.sqlite3_value_text(args[0]).utf8_to_string();
+		int wordIndex = SQLitePCL.raw.sqlite3_value_int(args[1]);
+
+		string result = string.Empty;
+
+		if (!string.IsNullOrEmpty(text)
+			&& text.Split() is var words
+			&& words is not null
+			&& wordIndex >= 0 && wordIndex < words.Length)
+		{
+			result = words[wordIndex];
+		}
+
+		raw.sqlite3_result_text(ctx, result);
 	}
 
 	/// <summary>
