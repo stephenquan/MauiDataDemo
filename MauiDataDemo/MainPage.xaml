@@ -10,20 +10,8 @@
         <BackButtonBehavior IsEnabled="False" IsVisible="False" />
     </Shell.BackButtonBehavior>
 
-    <Grid RowDefinitions="*,Auto">
-        <Grid IsClippedToBounds="True">
-            <CollectionView ItemsSource="{Binding Cities}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="local:CityInfo">
-                        <Grid Padding="10,5,10,5" ColumnDefinitions="80,*">
-                            <Label Text="{Binding Id}" />
-                            <Label Grid.Column="1" Text="{Binding City}" />
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </Grid>
-        <Grid Grid.Row="1" Padding="10">
+    <Grid RowDefinitions="Auto,*">
+        <Grid Grid.Row="0" Padding="10">
             <FlexLayout Wrap="Wrap">
                 <FlexLayout.Resources>
                     <ResourceDictionary>
@@ -38,6 +26,18 @@
                 <Button Command="{Binding PopulateDataTable2Command}" Text="Populate DataTable #2 (Unsafe)" />
                 <Button Command="{Binding PopulateDataTable3Command}" Text="Populate DataTable #3 (Safe)" />
             </FlexLayout>
+        </Grid>
+        <Grid Grid.Row="1">
+            <CollectionView ItemsSource="{Binding Cities}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="local:CityInfo">
+                        <Grid Padding="10,5,10,5" ColumnDefinitions="80,*">
+                            <Label Text="{Binding Id}" />
+                            <Label Grid.Column="1" Text="{Binding City}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </Grid>
     </Grid>
     <!--<ScrollView>

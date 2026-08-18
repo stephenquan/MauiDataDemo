@@ -18,8 +18,8 @@
     <NuGetAuditMode>all</NuGetAuditMode>
 
     <!-- MAUI Specific -->
-    <MauiVersion>10.0.41</MauiVersion>
-    <MauiPackageVersion>10.0.41</MauiPackageVersion>
+    <MauiVersion>10.0.90</MauiVersion>
+    <MauiPackageVersion>10.0.90</MauiPackageVersion>
     <MicrosoftExtensionsLoggingDebugVersion>10.0.3</MicrosoftExtensionsLoggingDebugVersion>
     <NextMauiPackageVersion>10.0.0</NextMauiPackageVersion>
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
@@ -27,9 +27,9 @@
     <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
 
     <!-- CommunityToolkits -->
-    <CommunityToolkitMauiVersion>14.0.1</CommunityToolkitMauiVersion>
-    <CommunityToolkitMauiMarkupVersion>7.0.0</CommunityToolkitMauiMarkupVersion>
-    <CommunityToolkitMvvmVersion>8.4.0</CommunityToolkitMvvmVersion>
+    <CommunityToolkitMauiVersion>15.0.0</CommunityToolkitMauiVersion>
+    <CommunityToolkitMauiMarkupVersion>0.0.0</CommunityToolkitMauiMarkupVersion>
+    <CommunityToolkitMvvmVersion>8.4.2</CommunityToolkitMvvmVersion>
     <NoWarn>$(NoWarn);MCTEXP001</NoWarn>
 
     <!-- GitVersion -->

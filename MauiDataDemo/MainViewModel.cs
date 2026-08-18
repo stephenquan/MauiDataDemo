@@ -66,21 +66,33 @@ public partial class MainViewModel : ObservableObject
 		try
 		{
 			MyDatabase.Execute("DELETE FROM CITIES");
-			var task1 = Task.Run(() =>
+			List<Task> tasks = new();
+			for (int i = 0; i < 10; i++)
 			{
-				for (int i = 0; i < 50000; i++)
+				int _i = i;
+				var t = Task.Run(() =>
 				{
-					MyDatabase.Insert(new CityInfo { Id = i + 1, City = RandomCityName() });
-				}
-			});
-			var task2 = Task.Run(() =>
-			{
-				for (int i = 50000; i < 100000; i++)
-				{
-					MyDatabase.Insert(new CityInfo { Id = i + 1, City = RandomCityName() });
-				}
-			});
-			await Task.WhenAll(task1, task2);
+					MyDatabase.Insert(new CityInfo { Id = _i + 1, City = RandomCityName() });
+				});
+				tasks.Add(t);
+			}
+			await Task.WhenAll(tasks);
+
+			//var task1 = Task.Run(() =>
+			//{
+			//	for (int i = 0; i < 50000; i++)
+			//	{
+			//		MyDatabase.Insert(new CityInfo { Id = i + 1, City = RandomCityName() });
+			//	}
+			//});
+			//var task2 = Task.Run(() =>
+			//{
+			//	for (int i = 50000; i < 100000; i++)
+			//	{
+			//		MyDatabase.Insert(new CityInfo { Id = i + 1, City = RandomCityName() });
+			//	}
+			//});
+			//await Task.WhenAll(task1, task2);
 			RefreshCities();
 		}
 		catch (Exception ex)
@@ -183,12 +195,12 @@ public partial class MainViewModel : ObservableObject
 					});
 				}
 			});
-			var task2 = Task.Run(() =>
+			var task2 = Task.Run(async () =>
 			{
 				for (int i = 50000; i < 100000; i++)
 				{
 					int _i = i; // Capture loop variable for use in lambda
-					MainViewModel.Dispatcher.Dispatch(() =>
+					await MainViewModel.Dispatcher.DispatchAsync(() =>
 					{
 						var row = MyDataTable.NewRow();
 						row["id"] = _i + 1;
