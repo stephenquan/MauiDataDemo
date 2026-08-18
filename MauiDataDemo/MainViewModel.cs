@@ -40,18 +40,9 @@ public partial class MainViewModel : ObservableObject
 			null,
 			GetNWord);
 
-		//MyDatabase.CreateTable<CityInfo>();
-
 		MyDatabase.RunInTransaction(() =>
 		{
-			MyDatabase.Execute(
-				"""
-				CREATE TABLE Cities
-				(
-					Id INTEGER UNIQUE,
-					City TEXT
-				)
-				""");
+			MyDatabase.CreateTable<CityInfo>();
 			MyDatabase.Execute("CREATE INDEX IX_Cities_001 ON Cities (Id)");
 			MyDatabase.Execute("CREATE INDEX IX_Cities_002 ON Cities (GetNWord(City, 0))");
 			MyDatabase.Execute("CREATE INDEX IX_Cities_003 ON Cities (GetNWord(City, 1))");
